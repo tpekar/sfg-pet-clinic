@@ -21,9 +21,9 @@ public class VetSDJpaService implements VetService {
 
     @Override
     public Set<Vet> findAll() {
-        Set<Vet> Vets = new HashSet<>();
-        vetRepository.findAll().forEach(Vets::add);
-        return Vets;
+        Set<Vet> vets = new HashSet<>();
+        vetRepository.findAll().forEach(vets::add);
+        return vets;
     }
 
     @Override
