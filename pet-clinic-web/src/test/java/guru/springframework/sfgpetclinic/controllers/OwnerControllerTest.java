@@ -4,6 +4,7 @@ import guru.springframework.sfgpetclinic.model.Owner;
 import guru.springframework.sfgpetclinic.services.OwnerService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.ui.Model;
@@ -12,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -36,7 +36,9 @@ public class OwnerControllerTest {
     public void listOwners() {
         assertEquals("owners/index", ownerController.listOwners(model));
         verify(ownerService, times(1)).findAll();
-        verify(model, times(1)).addAttribute(eq("owners"), anySet());
+
+        ArgumentCaptor<Set<Owner>> argumentCaptor = ArgumentCaptor.forClass(Set.class);
+        verify(model, times(1)).addAttribute(eq("owners"), argumentCaptor.capture());
 
     }
 
