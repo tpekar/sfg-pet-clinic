@@ -4,55 +4,58 @@ import guru.springframework.sfgpetclinic.model.Owner;
 import guru.springframework.sfgpetclinic.services.OwnerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.ui.Model;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ExtendWith(MockitoExtension.class)
 public class OwnerControllerTest {
 
+    @InjectMocks
     OwnerController ownerController;
 
     @Mock
     OwnerService ownerService;
 
-    @Mock
-    Model model;
+    MockMvc mockMvc;
+
+    Set<Owner> owners;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        ownerController = new OwnerController(ownerService);
+    public void setUp() {
+        owners = new HashSet<>();
+        owners.add(Owner.builder().id(1L).build());
+        owners.add(Owner.builder().id(2L).build());
+
+        mockMvc = MockMvcBuilders.standaloneSetup(ownerController).build();
     }
 
     @Test
-    public void listOwners() {
-        assertEquals("owners/index", ownerController.listOwners(model));
-        verify(ownerService, times(1)).findAll();
-
-        ArgumentCaptor<Set<Owner>> argumentCaptor = ArgumentCaptor.forClass(Set.class);
-        verify(model, times(1)).addAttribute(eq("owners"), argumentCaptor.capture());
-
-    }
-
-    @Test
-    public void findOwners() {
-        Set<Owner> owners = new HashSet<>();
-        Owner owner0 = new Owner();
-        owner0.setFirstName("Pete");
-        Owner owner1 = new Owner();
-        owner1.setFirstName("Fiona");
-        owners.add(owner0);
-        owners.add(owner1);
-
+    public void listOwners() throws Exception {
         when(ownerService.findAll()).thenReturn(owners);
-        assertEquals(owners.size(), ownerService.findAll().size());
+        mockMvc.perform(get("/owners"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("owners/index"))
+                .andExpect(model().attribute("owners", hasSize(2)));
+    }
+
+    @Test
+    public void findOwners() throws Exception {
+        mockMvc.perform(get("/owners/find"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("notimplemented"));
+        verifyZeroInteractions(ownerService);
     }
 }
