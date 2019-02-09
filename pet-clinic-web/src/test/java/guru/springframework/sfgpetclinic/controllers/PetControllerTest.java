@@ -8,8 +8,10 @@ import guru.springframework.sfgpetclinic.services.PetService;
 import guru.springframework.sfgpetclinic.services.PetTypeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -24,7 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class PetControllerTest {
+@ExtendWith(MockitoExtension.class)
+class PetControllerTest {
+
     @Mock
     PetService petService;
 
@@ -36,20 +40,23 @@ public class PetControllerTest {
 
     @InjectMocks
     PetController petController;
-    Set<PetType> petTypes;
 
     MockMvc mockMvc;
 
     Owner owner;
+    Set<PetType> petTypes;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         owner = Owner.builder().id(1l).build();
+
         petTypes = new HashSet<>();
         petTypes.add(PetType.builder().id(1L).name("Dog").build());
         petTypes.add(PetType.builder().id(2L).name("Cat").build());
 
-        mockMvc = MockMvcBuilders.standaloneSetup(petController).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(petController)
+                .build();
     }
 
     @Test
@@ -101,4 +108,18 @@ public class PetControllerTest {
         verify(petService).save(any());
     }
 
+    @Test
+    void populatePetTypes() {
+        //todo impl
+    }
+
+    @Test
+    void findOwner() {
+        //todo impl
+    }
+
+    @Test
+    void initOwnerBinder() {
+        //todo impl
+    }
 }
